@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this preprint or its computational artifacts, please cite it as below."
+title: "Local Rigidity at Twelve States for the 2n-3 1-Avoiding Threshold with a Two-Fixed-Point Witness Family"
+type: article
+authors:
+  - family-names: Yonezu
+    given-names: Ryutaro
+version: "1.0.0"
+date-released: 2026-09-09
