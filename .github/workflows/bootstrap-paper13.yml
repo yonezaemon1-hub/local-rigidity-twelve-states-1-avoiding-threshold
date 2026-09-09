@@ -1,0 +1,30 @@
+name: Bootstrap Paper 13 repository
+
+on:
+  push:
+    paths:
+      - 'Paper13_PreDOI_Release_Candidate_2026-09-09.zip'
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Expand audited release candidate
+        run: |
+          set -euo pipefail
+          ZIP='Paper13_PreDOI_Release_Candidate_2026-09-09.zip'
+          rm -rf /tmp/paper13_rc
+          mkdir -p /tmp/paper13_rc
+          unzip -q "$ZIP" -d /tmp/paper13_rc
+          cp -a /tmp/paper13_rc/release_candidate/. .
+          rm -f "$ZIP"
+          rm -f .github/workflows/bootstrap-paper13.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Publish Paper 13 pre-DOI release candidate'
+          git push
