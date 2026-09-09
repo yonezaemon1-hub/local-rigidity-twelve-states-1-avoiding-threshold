@@ -1,0 +1,22 @@
+name: Reproduce computational audits
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'paper13_*.py'
+      - 'paper13_*.cpp'
+      - '*_output.txt'
+      - 'reproduce_all.sh'
+      - 'SHA256SUMS.txt'
+      - '.github/workflows/audit.yml'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run full reproduction
+        run: |
+          chmod +x reproduce_all.sh
+          ./reproduce_all.sh
