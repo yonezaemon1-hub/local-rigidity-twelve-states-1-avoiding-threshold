@@ -222,71 +222,79 @@ we have $D(q_1)=1+D(S)$. Next,
 \[
 a^{-1}(S)=\{q_1\},\qquad b^{-1}(S)=R.
 \]
-The $a$-branch has cost $1+D(q_1)=2+D(S)$ and hence cannot minimize, so
-\[
+The $q_1$ branch cannot be minimizing, since it would give
+$D(S)=1+D(q_1)=2+D(S)$. Thus
+\begin{equation}\label{eq:S-R}
 D(S)=1+D(R).
-\]
+\end{equation}
 For $R$,
 \[
 a^{-1}(R)=\{q_1,q_{n-2}\},\qquad b^{-1}(R)=P_{n-2}.
 \]
-The first set contains $q_{n-2}$, so by Lemma~\ref{lem:singletons} and monotonicity its distance is at least $n-4$. The second branch enters the chain
+By monotonicity, $D(\{q_1,q_{n-2}\})\ge D(q_1)=D(S)+1$, so this branch also cannot minimize in view of \eqref{eq:S-R}. Hence
+\begin{equation}\label{eq:R-P}
+D(R)=1+D(P_{n-2}).
+\end{equation}
+For $5\le i\le n-2$, both inverse letters map $P_i$ to $P_{i-1}$, and therefore
+\begin{equation}\label{eq:Pshift}
+D(P_{n-2})=(n-6)+D(P_4).
+\end{equation}
+It remains to compute $D(P_4)$. We have
 \[
-P_{n-2}\xrightarrow{b^{-1}}P_{n-3}\xrightarrow{b^{-1}}\cdots\xrightarrow{b^{-1}}P_4
+a^{-1}(P_4)=\{q_4,q_n\}=:X,\qquad
+b^{-1}(P_4)=\{q_3,q_4\}=:Y.
 \]
-with
+For $Y$,
 \[
-D(P_i)=1+D(P_{i-1})\qquad(5\le i\le n-2).
+a^{-1}(Y)=\{q_n\},\qquad b^{-1}(Y)=S.
 \]
-At $P_4=\{q_4,q_5\}$, one checks
+Lemma~\ref{lem:singletons} and monotonicity give
+$D(q_n)=n-2$ and $D(S)\ge D(q_2)=n-2$, hence
 \[
-a^{-1}(P_4)=\{q_4,q_n\},\qquad b^{-1}(P_4)=\{q_3,q_4\}.
+D(Y)=n-1.
 \]
-Using the singleton values and the recurrence repeatedly yields
+For $X$,
 \[
-D(P_4)=n-1,
+a^{-1}(X)=\{q_{n-1},q_n\},\qquad
+b^{-1}(X)=\{q_3,q_n\}=:Z.
 \]
-and therefore
+Monotonicity gives $D(\{q_{n-1},q_n\})\ge D(q_n)=n-2$. Also
+$a^{-1}(Z)=\{q_{n-1}\}$, so
 \[
-D(P_{n-2})=2n-7.
+D(Z)\le1+D(q_{n-1})=n-2,
 \]
-The competing $a$-branch from $R$ is no smaller, hence
+while monotonicity gives the reverse inequality $D(Z)\ge D(q_n)=n-2$. Thus $D(Z)=n-2$ and $D(X)=n-1$. Consequently
 \[
-D(R)=2n-5,
+D(P_4)=1+\min\{D(X),D(Y)\}=n.
 \]
-which gives
+Combining \eqref{eq:S-R}, \eqref{eq:R-P}, and \eqref{eq:Pshift} yields
 \[
-D(S)=2n-4.
+D(S)=2+(n-6)+n=2n-4.
 \]
 \end{proof}
 
 \begin{theorem}\label{thm:main}
-For every $n\ge6$, the family $T_n$ is strongly connected and synchronizing and
+For every $n\ge6$, the binary automaton $T_n$ is strongly connected and synchronizing, and
 \[
 \operatorname{at}_1(T_n)=2n-3.
 \]
 More precisely,
 \[
-\bigl(D(q_1),\ldots,D(q_n)\bigr)
-=
-\bigl(2n-3,\,n-2,\,1,\,2,\ldots,n-2\bigr).
+\bigl(D(q_1),D(q_2),\ldots,D(q_n)\bigr)
+=\bigl(2n-3,n-2,1,2,\ldots,n-2\bigr).
 \]
 \end{theorem}
 \begin{proof}
-Proposition~\ref{prop:sc} and the reset-word constructions above give strong connectivity and synchronization. Lemma~\ref{lem:singletons} computes all singleton distances except $D(q_1)$. From
+Strong connectivity and synchronization were proved above. By Lemma~\ref{lem:pair},
 \[
-D(q_1)=1+D(\{q_2,q_3\})
+D(q_1)=1+D(\{q_2,q_3\})=2n-3.
 \]
-and Lemma~\ref{lem:pair},
-\[
-D(q_1)=2n-3.
-\]
-The remaining coordinates are exactly those of Lemma~\ref{lem:singletons}, so the maximum is $2n-3$.
+Lemma~\ref{lem:singletons} gives all remaining entries of the vector, whose largest value is $2n-3$.
 \end{proof}
 
 An explicit shortest word avoiding $q_1$ is
 \[
- w_n=ab\,a^{n-4}b\,a^{n-5}b^2 a,
+ a b a^{n-4} b a^{n-5} b^2 a,
 \]
 of length $2n-3$.
 
