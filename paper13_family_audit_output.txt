@@ -1,0 +1,27 @@
+PAPER13_FAMILY_AUDIT
+family = T_n (two-fixed-point permutation family)
+
+n= 5 at1= 7 expected= 7 forward_reverse=PASS
+n= 6 at1= 9 expected= 9 forward_reverse=PASS
+n= 7 at1=11 expected=11 forward_reverse=PASS
+n= 8 at1=13 expected=13 forward_reverse=PASS
+n= 9 at1=15 expected=15 forward_reverse=PASS
+n=10 at1=17 expected=17 forward_reverse=PASS
+n=11 at1=19 expected=19 forward_reverse=PASS
+n=12 at1=21 expected=21 forward_reverse=PASS
+n=13 at1=23 expected=23 forward_reverse=PASS
+n=14 at1=25 expected=25 forward_reverse=PASS
+n=15 at1=27 expected=27 forward_reverse=PASS
+n=16 at1=29 expected=29 forward_reverse=PASS
+n=17 at1=31 expected=31 forward_reverse=PASS
+n=18 at1=33 expected=33 forward_reverse=PASS
+n=19 at1=35 expected=35 forward_reverse=PASS
+n=20 at1=37 expected=37 forward_reverse=PASS
+
+q1_explicit_word_n6_n200 = PASS
+odd_reset_formula_n7_n199 = PASS
+even_reset_formula_n12_n200 = PASS
+small_even_reset_n6_n8_n10 = PASS
+
+BOUNDARY_n5 = strongly_connected_but_not_synchronizing
+THEOREM_COMPUTATIONAL_AUDIT = PASS_FOR_STATED_TEST_RANGES
