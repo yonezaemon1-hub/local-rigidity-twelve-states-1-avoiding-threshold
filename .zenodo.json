@@ -1,0 +1,21 @@
+{
+  "title": "Local Rigidity at Twelve States for the 2n-3 1-Avoiding Threshold with a Two-Fixed-Point Witness Family: Source and Reproducibility Package",
+  "creators": [
+    {
+      "name": "Yonezu, Ryutaro",
+      "affiliation": "Independent Researcher"
+    }
+  ],
+  "description": "Source code, exhaustive radius-three checkers, family audits, frozen outputs, manuscript source, and integrity metadata accompanying the preprint on local rigidity for the 1-avoiding threshold at twelve states.",
+  "license": "MIT",
+  "upload_type": "software",
+  "version": "v1.0.0",
+  "keywords": [
+    "synchronizing automata",
+    "avoiding words",
+    "1-avoiding threshold",
+    "finite automata",
+    "exhaustive computation",
+    "local rigidity"
+  ]
+}
