@@ -1,0 +1,15 @@
+PAPER13_ISOMORPHISM_CHECK
+S1: cycle=b:10+1+1 class=T12
+S2: cycle=b:10+1+1 class=T12
+S3: cycle=b:11+1 class=A12
+S4: cycle=b:11+1 class=A12
+S5: cycle=b:11+1 class=A12
+S6: cycle=b:11+1 class=A12
+S7: cycle=b:11+1 class=A12
+S8: cycle=b:11+1 class=A12
+S9: cycle=b:11+1 class=A12
+S10: cycle=b:11+1 class=A12
+A12_class=8
+T12_class=2
+OTHER=0
+ISOMORPHISM_CLASSIFICATION=PASS
