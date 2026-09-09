@@ -1,0 +1,408 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Local Rigidity at Twelve States for the $2n-3$ 1-Avoiding Threshold\\
+with a Two-Fixed-Point Witness Family}
+\author{Ryutaro Yonezu\\Independent Researcher}
+\date{Draft v6.1 --- 9 September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a deterministic finite automaton, the 1-avoiding threshold is the maximum, over avoidable states, of the length of a shortest word whose image avoids that state. Ferens, Szyku\l a, and Vorel explicitly defined a binary strongly connected synchronizing family $A_n$ and proved $\operatorname{at}_1(A_n)=2n-3$ for $n\ge7$, while a 2026 survey records $2n-3$ as the best known lower bound for every $n\ge6$. Our main finite result is an exhaustive local classification at twelve states: in the full labeled transition-table Hamming ball of radius three around $A_{12}$, every strongly connected synchronizing automaton with 1-avoiding threshold at least 21 is isomorphic either to $A_{12}$ or to a two-fixed-point automaton $T_{12}$, and none has threshold at least 22. The finite claim is verified by two exhaustive implementations---a reference forward-subset checker and a faster reverse-preimage gated checker---together with an independent isomorphism classification. To characterize the second class uniformly, we analyze the binary family $T_n$ and prove directly for every $n\ge6$ that it is strongly connected and synchronizing with exact threshold $2n-3$; the proof uses an exact Bellman recurrence on preimages and yields the full vector of one-state avoiding distances. We make no priority claim for the transition family $T_n$ itself; the novelty claim of this note is restricted to the results established here, in particular the radius-three local classification and the accompanying explicit analysis. This is a preprint draft and has not been peer reviewed.
+\end{abstract}
+
+\section{Introduction}
+Avoiding words ask for a word whose image excludes a prescribed state. The largest shortest avoiding-word length in an automaton is its 1-avoiding threshold. The problem is closely connected to synchronization: improved avoiding bounds feed into improved reset-threshold bounds. The current general upper bound is the quadratic value $(n-2)(n-1)+2=n^2-3n+4$, while a linear upper bound remains open~\cite{Szykula2026}.
+
+Experiments of Kisielewicz, Kowalski, and Szyku\l a motivated the conjectural upper bound $2n-2$ for synchronizing automata~\cite{KKS2016}. Ferens, Szyku\l a, and Vorel (FSV) later explicitly described a binary strongly connected synchronizing family $A_n$ and formulated a refinement suggesting that $2n-2$ occurs only in finitely many exceptional cases and trivial extensions~\cite{FSV2021}. Their Theorem~4 proves $\operatorname{at}_1(A_n)=2n-3$ for $n\ge7$; immediately afterward they state that the lower bound for the cases $n\le6$ was confirmed by experiments. Szyku\l a's 2026 AFL survey still lists $2n-2$ as an open conjectural upper bound and $2n-3$ as the best known lower bound for all $n\ge6$~\cite{Szykula2026}. The range distinction is intentional: the theorem for $T_n$ below includes $n=6$ by a direct analytic proof rather than by a small-case computation.
+
+This note makes two narrow contributions, ordered by their role in the paper. First, we exhaustively inspect the labeled Hamming ball of radius three around $A_{12}$ and obtain a local rigidity theorem: threshold 21 survives only in the two isomorphism classes $A_{12}$ and $T_{12}$, and threshold 22 does not appear. Second, we give a uniform analytic treatment of the two-fixed-point class by defining $T_n$ for all $n\ge6$ and proving directly that its threshold is exactly $2n-3$. The family differs from the explicitly published FSV family $A_n$ in only two transitions and is not isomorphic to it: the unique permutation letter has cycle type $(n-2,1,1)$ in $T_n$ and $(n-1,1)$ in $A_n$.
+
+The finite search does not prove the global $n=12$ case of the $2n-3$ conjecture, and the family analysis does not improve the numerical lower bound. We do not rely on a claim that the transition family $T_n$ itself is new. The point is structural and verifiable: the complete radius-three neighborhood of $A_{12}$ contains exactly two isomorphism classes at the best-known threshold 21, and one of them admits the explicit uniform description analyzed below.
+
+\section{Preliminaries}
+Let $\mathcal A=(Q,\Sigma,\delta)$ be a deterministic finite automaton. For $S\subseteq Q$ and $w\in\Sigma^*$, write
+\[
+  \delta(S,w)=\{\delta(q,w):q\in S\}.
+\]
+A word $w$ avoids $S$ if $\delta(Q,w)\cap S=\varnothing$. For an avoidable nonempty set $S$, let
+\[
+  D(S)=\min\{|w|:\delta(Q,w)\cap S=\varnothing\}.
+\]
+For a singleton we abbreviate $D(q)=D(\{q\})$. The 1-avoiding threshold is
+\[
+  \operatorname{at}_1(\mathcal A)=\max_{q\in Q} D(q)
+\]
+when all states are avoidable. In particular, this applies to strongly connected synchronizing automata with at least two states.
+
+For a letter $c$, let $c^{-1}(S)=\{q\in Q:\delta(q,c)\in S\}$. Then the shortest-path recurrence in the reverse subset automaton is
+\begin{equation}\label{eq:bellman}
+ D(S)=1+\min_{c\in\Sigma}D(c^{-1}(S)),\qquad D(\varnothing)=0.
+\end{equation}
+Also, monotonicity gives
+\begin{equation}\label{eq:mono}
+ S\subseteq R\quad\Longrightarrow\quad D(S)\le D(R).
+\end{equation}
+
+\section{The two-fixed-point family \texorpdfstring{$T_n$}{Tn}}
+Fix $n\ge6$ and let $Q=\{q_1,\ldots,q_n\}$, $\Sigma=\{a,b\}$. Define $T_n$ by
+\[
+\begin{array}{lll}
+q_1a=q_2, & q_2a=q_1, & q_3a=q_1,\\
+q_i a=q_{i+1} & (4\le i\le n-1), & q_na=q_4,
+\end{array}
+\]
+and
+\[
+q_1b=q_1,\qquad q_nb=q_n,
+\]
+while
+\[
+q_i b=q_{i+1}\quad(2\le i\le n-2),\qquad q_{n-1}b=q_2.
+\]
+Thus $b$ is the permutation
+\[
+ (q_2\ q_3\ \cdots\ q_{n-1})(q_1)(q_n),
+\]
+whereas $a$ has rank $n-1$ and misses $q_3$.
+
+The FSV family $A_n$~\cite{FSV2021} has the same letter $a$ but uses
+\[
+ b=(q_2\ q_3\ \cdots\ q_n)(q_1).
+\]
+Hence $T_n$ is obtained from $A_n$ by changing only the two transitions out of $q_{n-1}$ and $q_n$ under $b$.
+
+\begin{proposition}\label{prop:sc}
+For every $n\ge6$, $T_n$ is strongly connected.
+\end{proposition}
+\begin{proof}
+The letter $b$ cycles through $q_2,\ldots,q_{n-1}$. From any state on this cycle one can reach $q_3$ and then use $a$ to reach $q_1$. From $q_1$, letter $a$ reaches $q_2$ and hence the $b$-cycle. From the cycle, $q_{n-1}a=q_n$, while $q_na=q_4$ returns to the cycle. Thus every state reaches every other state.
+\end{proof}
+
+\subsection{Synchronization}
+Let $f=ab$. Its action is
+\[
+q_1f=q_3,\quad q_2f=q_1,\quad q_3f=q_1,
+\]
+\[
+q_if=q_{i+2}\quad(4\le i\le n-3),\qquad
+q_{n-2}f=q_2,\quad q_{n-1}f=q_n,\quad q_nf=q_5.
+\]
+
+If $n$ is odd, the functional graph of $f$ has the unique directed cycle $\{q_1,q_3\}$. Therefore $Qf^n=\{q_1,q_3\}$. Since $n-7$ is even,
+\[
+\{q_1,q_3\}\,b a^{n-7} b a b a=\{q_1\}.
+\]
+Indeed the successive sets are
+\[
+\{q_1,q_3\}\xrightarrow{b}\{q_1,q_4\}
+\xrightarrow{a^{n-7}}\{q_1,q_{n-3}\}
+\xrightarrow{b}\{q_1,q_{n-2}\}
+\xrightarrow{a}\{q_2,q_{n-1}\}
+\xrightarrow{b}\{q_3,q_2\}
+\xrightarrow{a}\{q_1\}.
+\]
+Thus, for odd $n\ge7$,
+\[
+ f^n b a^{n-7}baba
+\]
+is a reset word.
+
+Now let $n\ge12$ be even. The functional graph of $f$ has two cycles,
+\[
+C_1=\{q_1,q_3\},\qquad
+C_2=\{q_5,q_7,\ldots,q_{n-1},q_n\}.
+\]
+Hence $Qf^n=C_1\cup C_2$. A direct application of $aab$ gives
+\[
+(C_1\cup C_2)aab
+=\{q_1,q_2,q_3,q_5,q_6,q_8,q_{10},\ldots,q_{n-2}\}.
+\]
+All even-indexed states in this set flow under $f$ to $C_1$, while $q_5$ lies on $C_2$. Since $|C_2|=(n-2)/2$ and $n\equiv2\pmod{|C_2|}$, we have $q_5f^n=q_9$. Consequently
+\[
+(C_1\cup C_2)aab f^n=\{q_1,q_3,q_9\}.
+\]
+Finally,
+\[
+\{q_1,q_3,q_9\}
+\xrightarrow{b}\{q_1,q_4,q_{10}\}
+\xrightarrow{a^{n-11}}\{q_2,q_{n-7},q_{n-1}\}
+\xrightarrow{b}\{q_3,q_{n-6},q_2\}
+\xrightarrow{a^3}\{q_1,q_{n-3}\}
+\xrightarrow{baba}\{q_1\}.
+\]
+Therefore, for even $n\ge12$,
+\[
+ f^n aab f^n b a^{n-11}b a^3baba
+\]
+is a reset word. The remaining even cases $n=6,8,10$ are witnessed by the explicit reset words
+\[
+\begin{array}{c|l}
+6 & \texttt{abaabbababbaba}\\
+8 & \texttt{abaababbabababbaaaba}\\
+10& \texttt{ababaababaabababbabababa}.
+\end{array}
+\]
+Thus $T_n$ is synchronizing for every $n\ge6$.
+
+\subsection{Exact 1-avoiding threshold}
+We now compute all singleton avoiding distances exactly.
+
+\begin{lemma}\label{lem:singletons}
+For $T_n$ with $n\ge6$,
+\[
+D(q_3)=1,
+\]
+\[
+D(q_i)=i-2\qquad(4\le i\le n),
+\]
+and
+\[
+D(q_2)=n-2.
+\]
+\end{lemma}
+\begin{proof}
+The inverse images of $q_3$ are $a^{-1}(q_3)=\varnothing$ and $b^{-1}(q_3)=\{q_2\}$, hence $D(q_3)=1$. For $5\le i\le n-1$, both inverse letters send $\{q_i\}$ to $\{q_{i-1}\}$, so $D(q_i)=1+D(q_{i-1})$. Also
+\[
+a^{-1}(q_4)=\{q_n\},\qquad b^{-1}(q_4)=\{q_3\},
+\]
+so $D(q_4)=2$, while
+\[
+a^{-1}(q_n)=\{q_{n-1}\},\qquad b^{-1}(q_n)=\{q_n\},
+\]
+forces $D(q_n)=1+D(q_{n-1})=n-2$.
+
+For $q_2$,
+\[
+a^{-1}(q_2)=\{q_1\},\qquad b^{-1}(q_2)=\{q_{n-1}\}.
+\]
+Independently, the Bellman equation for $q_1$ is
+\[
+D(q_1)=1+\min\{D(\{q_2,q_3\}),D(q_1)\}
+      =1+D(\{q_2,q_3\}),
+\]
+since the self-loop branch cannot satisfy a finite shortest-distance equation. By monotonicity, $D(\{q_2,q_3\})\ge D(q_2)$, hence $D(q_1)>D(q_2)$. Therefore the $q_1$ branch cannot minimize the Bellman recurrence for $q_2$, and
+\[
+D(q_2)=1+D(q_{n-1})=n-2.
+\]
+\end{proof}
+
+\begin{lemma}\label{lem:pair}
+For every $n\ge6$,
+\[
+D(\{q_2,q_3\})=2n-4.
+\]
+\end{lemma}
+\begin{proof}
+Write
+\[
+S=\{q_2,q_3\},\quad R=\{q_2,q_{n-1}\},\quad
+P_i=\{q_i,q_{i+1}\}\ (4\le i\le n-2).
+\]
+Since
+\[
+a^{-1}(q_1)=S,\qquad b^{-1}(q_1)=\{q_1\},
+\]
+we have $D(q_1)=1+D(S)$. Next,
+\[
+a^{-1}(S)=\{q_1\},\qquad b^{-1}(S)=R.
+\]
+The $a$-branch has cost $1+D(q_1)=2+D(S)$ and hence cannot minimize, so
+\[
+D(S)=1+D(R).
+\]
+For $R$,
+\[
+a^{-1}(R)=\{q_1,q_{n-2}\},\qquad b^{-1}(R)=P_{n-2}.
+\]
+The first set contains $q_{n-2}$, so by Lemma~\ref{lem:singletons} and monotonicity its distance is at least $n-4$. The second branch enters the chain
+\[
+P_{n-2}\xrightarrow{b^{-1}}P_{n-3}\xrightarrow{b^{-1}}\cdots\xrightarrow{b^{-1}}P_4
+\]
+with
+\[
+D(P_i)=1+D(P_{i-1})\qquad(5\le i\le n-2).
+\]
+At $P_4=\{q_4,q_5\}$, one checks
+\[
+a^{-1}(P_4)=\{q_4,q_n\},\qquad b^{-1}(P_4)=\{q_3,q_4\}.
+\]
+Using the singleton values and the recurrence repeatedly yields
+\[
+D(P_4)=n-1,
+\]
+and therefore
+\[
+D(P_{n-2})=2n-7.
+\]
+The competing $a$-branch from $R$ is no smaller, hence
+\[
+D(R)=2n-5,
+\]
+which gives
+\[
+D(S)=2n-4.
+\]
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+For every $n\ge6$, the family $T_n$ is strongly connected and synchronizing and
+\[
+\operatorname{at}_1(T_n)=2n-3.
+\]
+More precisely,
+\[
+\bigl(D(q_1),\ldots,D(q_n)\bigr)
+=
+\bigl(2n-3,\,n-2,\,1,\,2,\ldots,n-2\bigr).
+\]
+\end{theorem}
+\begin{proof}
+Proposition~\ref{prop:sc} and the reset-word constructions above give strong connectivity and synchronization. Lemma~\ref{lem:singletons} computes all singleton distances except $D(q_1)$. From
+\[
+D(q_1)=1+D(\{q_2,q_3\})
+\]
+and Lemma~\ref{lem:pair},
+\[
+D(q_1)=2n-3.
+\]
+The remaining coordinates are exactly those of Lemma~\ref{lem:singletons}, so the maximum is $2n-3$.
+\end{proof}
+
+An explicit shortest word avoiding $q_1$ is
+\[
+ w_n=ab\,a^{n-4}b\,a^{n-5}b^2 a,
+\]
+of length $2n-3$.
+
+\begin{proposition}\label{prop:noniso}
+For every $n\ge6$, $T_n$ is not isomorphic to the FSV automaton $A_n$, even if an isomorphism is allowed to permute the two input letters.
+\end{proposition}
+\begin{proof}
+In both automata, $a$ has rank $n-1$ and $b$ is the unique permutation letter, so any isomorphism must map $b$ to $b$. The cycle type of $b$ is $(n-1,1)$ in $A_n$ and $(n-2,1,1)$ in $T_n$. Cycle type is invariant under conjugacy, hence the automata are non-isomorphic.
+\end{proof}
+
+\section{Local rigidity around \texorpdfstring{$A_{12}$}{A12}}
+We use labeled transition-table Hamming distance. A binary 12-state automaton has 24 labeled transition entries; changing exactly $d$ entries means choosing $d$ positions and replacing each target by one of the other 11 states. Thus the numbers of labeled automata at distances $1,2,3$ are respectively
+\[
+24\cdot11=264,
+\]
+\[
+\binom{24}{2}11^2=33{,}396,
+\]
+and
+\[
+\binom{24}{3}11^3=2{,}693{,}944.
+\]
+Including the center $A_{12}$ itself, the full labeled Hamming ball of radius three therefore contains
+\[
+1+264+33{,}396+2{,}693{,}944=2{,}727{,}605
+\]
+automata.
+
+We verify the finite statement in two independent ways. A reference implementation directly enumerates every noncentral automaton in the ball, tests strong connectivity, and performs a forward-subset BFS to determine synchronizability and the exact 1-avoiding threshold. A second implementation uses reverse-preimage BFS as an exact gate: for each state it explores all preimage subsets reachable by words of length at most 20, and keeps a candidate if some state has no avoiding word of length at most 20. Hence every automaton with threshold at least 21 necessarily passes the gate. The gated implementation then tests strong connectivity and synchronizability and computes the exact threshold. The two implementations return the same ten noncentral threshold-21 survivors.
+
+\begin{theorem}[Finite local rigidity at $n=12$]\label{thm:local}
+In the full labeled transition-table Hamming ball of radius three around $A_{12}$, containing $2{,}727{,}605$ automata, exactly eleven are strongly connected and synchronizing with 1-avoiding threshold at least 21. All eleven have threshold exactly 21. Nine are isomorphic to $A_{12}$ and two are isomorphic to $T_{12}$. In particular, no automaton in this radius-three ball is strongly connected and synchronizing with 1-avoiding threshold at least 22.
+\end{theorem}
+
+The exact reference search is summarized in Table~\ref{tab:local}. The row at distance zero is the known center $A_{12}$; the two programs independently enumerate distances one through three.
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrr}
+\toprule
+Distance & Labeled candidates & SC+sync & at$_1\ge21$ & at$_1\ge22$\\
+\midrule
+0 & 1 & 1 & 1 & 0\\
+1 & 264 & 238 & 0 & 0\\
+2 & 33,396 & 27,047 & 2 & 0\\
+3 & 2,693,944 & 1,905,177 & 8 & 0\\
+\midrule
+$\le3$ & 2,727,605 & 1,932,463 & 11 & 0\\
+\bottomrule
+\end{tabular}
+\caption{Exact reference search in the full radius-three Hamming ball around $A_{12}$. The SC+sync column is computed solely by the reference forward-subset implementation, which directly evaluates every labeled candidate in each shell; these counts are not inferred from the gated checker. The gated implementation independently reproduces the ten noncentral threshold-21 survivors.}
+\label{tab:local}
+\end{table}
+
+Among the ten noncentral threshold-21 survivors, an independent state-isomorphism checker propagates a proposed image of one seed state through both deterministic transition maps. Strong connectivity makes one seed sufficient to determine a full candidate isomorphism. Every survivor has $b$ as its unique permutation letter, so the same classification remains valid even if alphabet relabeling is allowed. The noncentral survivors split into eight copies of $A_{12}$ and two copies of $T_{12}$; adding the center gives nine and two, respectively, with no third class.
+
+\section{Reproducibility}
+The computational package consists of:
+\begin{itemize}
+\item \path{paper13_family_audit.py}: independent forward- and reverse-subset BFS checks for $T_n$, together with explicit avoiding and reset words;
+\item \path{paper13_local_rigidity_a12.cpp}: reference exhaustive radius-three search using forward subset BFS;
+\item \path{paper13_local_rigidity_a12_fast.cpp}: independent exhaustive search using an exact reverse-preimage gate;
+\item \path{paper13_isomorphism_check.py}: independent classification of the ten noncentral survivors;
+\item frozen output logs and SHA-256 hashes.
+\end{itemize}
+
+The family audit checks the exact singleton-distance vector for $n=5,\ldots,20$, verifies the explicit $q_1$-avoiding word through $n=200$, and verifies the reset constructions through $n=200$ in their stated ranges. The $n=5$ transition pattern has threshold $2n-3=7$ but is not synchronizing, which is why Theorem~\ref{thm:main} begins at $n=6$.
+
+\section{Relation to prior work and claim boundaries}
+FSV explicitly define a binary strongly connected synchronizing family $A_n$ and prove $\operatorname{at}_1(A_n)=2n-3$ for $n\ge7$; they also state that the existence of the series had been mentioned previously but not described yet~\cite{FSV2021}. Immediately after Theorem~4 they report experimental confirmation of the lower bound for the cases $n\le6$; this should not be read as the theorem asserting $\operatorname{at}_1(A_n)=2n-3$ for every smaller $n$ (indeed, their paper notes that $A_5$ has threshold $2n-2=8$). Independently, Volkov's 2022 survey attributes to Theorem~3.26 of Vorel's 2018 thesis a binary strongly connected synchronizing series with avoidability threshold $2n-3$ for $n\ge5$~\cite{Volkov2022,Vorel2018}. We do not identify the thesis construction with the explicitly published FSV transition family here; the non-isomorphism statement in Proposition~\ref{prop:noniso} is specifically with the FSV family defined in~\cite{FSV2021}. Szyku\l a's 2026 open-problems survey states that only two particular minimal-alphabet examples are known to reach $2n-2$, while $2n-3$ remains the best known lower bound for all $n\ge6$~\cite{Szykula2026}.
+
+Automata built from permutation letters together with a merging letter of rank $n-1$ have been studied previously, for example by Catalano and Jungers in the context of slowly synchronizing automata~\cite{CatalanoJungers2018}. Accordingly, we do not claim novelty for that general structural template. Nor do we make a priority claim for the transition family $T_n$ itself. A fresh targeted search performed on 9 September 2026 did not locate, among the publicly indexed sources inspected, a prior description matching its transitions, but the full transition table of the Vorel thesis construction was not available to us for direct comparison. The paper is therefore written so that its main finite claim does not depend on resolving that priority question.
+
+The principal novelty claim is the exact radius-three local classification around the explicitly published $A_{12}$ transition table: among all $2{,}727{,}605$ labeled automata in that ball, the strongly connected synchronizing automata with 1-avoiding threshold at least 21 fall into exactly the two classes stated in Theorem~\ref{thm:local}, and none has threshold at least 22. Targeted searches for an earlier Hamming-neighborhood classification of this form did not locate a matching public result; as always, this is evidence rather than a guarantee of priority.
+
+We do \emph{not} claim a better numerical lower bound than $2n-3$, a proof of the conjectural $2n-2$ upper bound, priority for the transition family $T_n$, novelty of the general permutation-plus-rank-$(n-1)$ architecture, a classification of all binary automata attaining $2n-3$, or a complete classification of 12-state binary automata. The radius-three theorem is local to the labeled Hamming ball around $A_{12}$.
+
+\section{Conclusion}
+The main finite result is a complete radius-three classification around $A_{12}$: among more than 2.7 million labeled transition tables, threshold 21 survives in exactly two isomorphism classes and threshold 22 does not occur. The class represented by $T_{12}$ extends to the explicit family $T_n$, for which the exact threshold $2n-3$ is proved directly for every $n\ge6$. This structural conclusion does not require a priority claim for the transition family itself. The natural next question is whether the local rigidity extends to larger neighborhoods or whether additional $2n-3$-attaining classes appear farther from $A_n$.
+
+\begin{thebibliography}{9}
+\bibitem{FSV2021}
+R. Ferens, M. Szyku\l a, and V. Vorel,
+``Lower Bounds on Avoiding Thresholds,''
+\emph{MFCS 2021}, LIPIcs 202, Article 46, 2021.
+DOI: \href{https://doi.org/10.4230/LIPIcs.MFCS.2021.46}{10.4230/LIPIcs.MFCS.2021.46}.
+
+\bibitem{KKS2016}
+A. Kisielewicz, J. Kowalski, and M. Szyku\l a,
+``Experiments with Synchronizing Automata,''
+\emph{CIAA 2016}, LNCS 9705, pp. 176--188, 2016.
+DOI: \href{https://doi.org/10.1007/978-3-319-40946-7_15}{10.1007/978-3-319-40946-7\_15}.
+
+\bibitem{Volkov2022}
+M. V. Volkov,
+``Synchronization of finite automata,''
+\emph{Russian Mathematical Surveys} 77(5), 819--891, 2022.
+DOI: \href{https://doi.org/10.4213/rm10005e}{10.4213/rm10005e}.
+
+\bibitem{Szykula2026}
+M. Szyku\l a,
+``Synchronizing Automata: Open Problems,''
+\emph{Electronic Proceedings in Theoretical Computer Science} 451, pp. 33--47, 2026.
+DOI: \href{https://doi.org/10.4204/EPTCS.451.3}{10.4204/EPTCS.451.3}.
+Also available as arXiv:2608.24245.
+
+
+\bibitem{CatalanoJungers2018}
+C. Catalano and R. M. Jungers,
+``On Randomized Generation of Slowly Synchronizing Automata,''
+\emph{MFCS 2018}, LIPIcs 117, Article 48, 2018.
+DOI: \href{https://doi.org/10.4230/LIPIcs.MFCS.2018.48}{10.4230/LIPIcs.MFCS.2018.48}.
+
+\bibitem{Vorel2018}
+V. Vorel,
+\emph{Synchronization and Discontinuous Input Processing in Transition Systems},
+Doctoral thesis, Charles University, Prague, 2018.
+
+\end{thebibliography}
+\end{document}
