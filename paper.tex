@@ -17,7 +17,7 @@
 \title{Local Rigidity at Twelve States for the $2n-3$ 1-Avoiding Threshold\\
 with a Two-Fixed-Point Witness Family}
 \author{Ryutaro Yonezu\\Independent Researcher}
-\date{Draft v6.1 --- 9 September 2026}
+\date{Preprint v1.0.0 --- 9 September 2026\\Paper DOI: \href{https://doi.org/10.5281/zenodo.22803251}{10.5281/zenodo.22803251}\\Software DOI: \href{https://doi.org/10.5281/zenodo.22803253}{10.5281/zenodo.22803253}}
 
 \begin{document}
 \maketitle
@@ -361,6 +361,8 @@ The computational package consists of:
 \end{itemize}
 
 The family audit checks the exact singleton-distance vector for $n=5,\ldots,20$, verifies the explicit $q_1$-avoiding word through $n=200$, and verifies the reset constructions through $n=200$ in their stated ranges. The $n=5$ transition pattern has threshold $2n-3=7$ but is not synchronizing, which is why Theorem~\ref{thm:main} begins at $n=6$.
+
+\paragraph{Archival identifiers and artifacts.} The publication record for this preprint is DOI \href{https://doi.org/10.5281/zenodo.22803251}{10.5281/zenodo.22803251}. The frozen source and reproducibility package is archived separately as DOI \href{https://doi.org/10.5281/zenodo.22803253}{10.5281/zenodo.22803253}. The public source repository is \url{https://github.com/yonezaemon1-hub/local-rigidity-twelve-states-1-avoiding-threshold}.
 
 \section{Relation to prior work and claim boundaries}
 FSV explicitly define a binary strongly connected synchronizing family $A_n$ and prove $\operatorname{at}_1(A_n)=2n-3$ for $n\ge7$; they also state that the existence of the series had been mentioned previously but not described yet~\cite{FSV2021}. Immediately after Theorem~4 they report experimental confirmation of the lower bound for the cases $n\le6$; this should not be read as the theorem asserting $\operatorname{at}_1(A_n)=2n-3$ for every smaller $n$ (indeed, their paper notes that $A_5$ has threshold $2n-2=8$). Independently, Volkov's 2022 survey attributes to Theorem~3.26 of Vorel's 2018 thesis a binary strongly connected synchronizing series with avoidability threshold $2n-3$ for $n\ge5$~\cite{Volkov2022,Vorel2018}. We do not identify the thesis construction with the explicitly published FSV transition family here; the non-isomorphism statement in Proposition~\ref{prop:noniso} is specifically with the FSV family defined in~\cite{FSV2021}. Szyku\l a's 2026 open-problems survey states that only two particular minimal-alphabet examples are known to reach $2n-2$, while $2n-3$ remains the best known lower bound for all $n\ge6$~\cite{Szykula2026}.

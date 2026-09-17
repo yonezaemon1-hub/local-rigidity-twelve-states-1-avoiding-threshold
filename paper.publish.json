@@ -6,8 +6,8 @@
   "publication_date": "2026-09-09",
   "paper_license": "CC-BY-4.0",
   "software_license": "MIT",
-  "paper_doi": null,
-  "software_doi": null,
+  "paper_doi": "10.5281/zenodo.22803251",
+  "software_doi": "10.5281/zenodo.22803253",
   "github": "https://github.com/yonezaemon1-hub/local-rigidity-twelve-states-1-avoiding-threshold",
-  "status": "preprint release candidate / not peer reviewed"
+  "status": "DOI-bearing preprint release candidate / not peer reviewed"
 }

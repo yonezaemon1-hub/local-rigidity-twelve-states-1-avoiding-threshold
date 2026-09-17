@@ -2,13 +2,19 @@
 
 Ryutaro Yonezu — Independent Researcher
 
-Status: pre-DOI preprint release candidate / not peer reviewed.
+Status: DOI-bearing preprint release candidate / not peer reviewed.
 
 ## Main results
 
 This repository accompanies the preprint
 
 **Local Rigidity at Twelve States for the 2n-3 1-Avoiding Threshold with a Two-Fixed-Point Witness Family**.
+
+Archival identifiers:
+
+- Paper DOI: `10.5281/zenodo.22803251`
+- Software DOI: `10.5281/zenodo.22803253`
+- Repository: `https://github.com/yonezaemon1-hub/local-rigidity-twelve-states-1-avoiding-threshold`
 
 The paper establishes two narrow results.
 
@@ -87,7 +93,7 @@ This repository does **not** claim:
 ## Files
 
 - `paper.tex` — manuscript source
-- Final preprint PDF — to be added only after Paper/Software DOI reservation, final rebuild, and SHA freeze
+- `Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf` — DOI-bearing final preprint PDF
 - `paper13_family_audit.py` — family/synchronization/avoiding-distance audit
 - `paper13_local_rigidity_a12.cpp` — exhaustive reference checker
 - `paper13_local_rigidity_a12_fast.cpp` — exhaustive fast checker

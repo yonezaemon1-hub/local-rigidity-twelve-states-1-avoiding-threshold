@@ -17,5 +17,12 @@
     "finite automata",
     "exhaustive computation",
     "local rigidity"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.22803251",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
+    }
   ]
 }

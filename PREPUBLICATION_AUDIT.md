@@ -55,3 +55,11 @@ The computational family audit verifies the exact threshold 2n-3 for T_n over n=
 ## Publication status
 
 DOIs are not yet inserted in this pre-DOI release candidate. The final publication freeze must occur only after the Paper and Software DOIs have been reserved, inserted into manuscript and metadata, and the PDF has been rebuilt and re-hashed.
+
+## DOI reservation and insertion — 17 September 2026
+
+- Paper DOI reserved: `10.5281/zenodo.22803251`.
+- Software DOI reserved: `10.5281/zenodo.22803253`.
+- The two identifiers are distinct.
+- DOI values are inserted into the manuscript source and publication metadata by the guarded finalization workflow.
+- No Zenodo publication is claimed at this stage; public release remains blocked until the DOI-bearing PDF is rebuilt, hashed, uploaded to the corresponding drafts, and both records are explicitly published.
