@@ -1,0 +1,227 @@
+name: Finalize No.13 DOI-bearing release candidate
+
+on:
+  push:
+    paths:
+      - '.github/workflows/finalize_no13.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Guard exact pre-finalization parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='7929293c0fec623f9d9b60c1a1d8abaff4464437'
+          actual="$(git rev-parse HEAD^)"
+          echo "EXPECTED_PARENT=$expected"
+          echo "ACTUAL_PARENT=$actual"
+          test "$actual" = "$expected"
+          echo 'PASS_EXPECTED_PARENT=true'
+
+      - name: Reproduce frozen mathematical and computational claims before metadata mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x reproduce_all.sh
+          ./reproduce_all.sh
+
+      - name: Insert reserved DOI metadata into release source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          PAPER_DOI = '10.5281/zenodo.22803251'
+          SOFTWARE_DOI = '10.5281/zenodo.22803253'
+          REPO_URL = 'https://github.com/yonezaemon1-hub/local-rigidity-twelve-states-1-avoiding-threshold'
+          PDF_NAME = 'Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf'
+
+          def replace_once(text, old, new, label):
+              n = text.count(old)
+              if n != 1:
+                  raise SystemExit(f'{label}: expected exactly 1 match, got {n}')
+              return text.replace(old, new, 1)
+
+          # paper.tex
+          p = Path('paper.tex')
+          s = p.read_text(encoding='utf-8')
+          s = replace_once(
+              s,
+              r'\date{Draft v6.1 --- 9 September 2026}',
+              r'\date{Preprint v1.0.0 --- 9 September 2026\\Paper DOI: \href{https://doi.org/10.5281/zenodo.22803251}{10.5281/zenodo.22803251}\\Software DOI: \href{https://doi.org/10.5281/zenodo.22803253}{10.5281/zenodo.22803253}}',
+              'paper date/DOI insertion'
+          )
+          anchor = ('The family audit checks the exact singleton-distance vector for $n=5,\\ldots,20$, '
+                    'verifies the explicit $q_1$-avoiding word through $n=200$, and verifies the reset '
+                    'constructions through $n=200$ in their stated ranges. The $n=5$ transition pattern '
+                    'has threshold $2n-3=7$ but is not synchronizing, which is why Theorem~\\ref{thm:main} '
+                    'begins at $n=6$.')
+          addition = anchor + ('\n\n\\paragraph{Archival identifiers and artifacts.} '
+                    'The publication record for this preprint is DOI '
+                    '\\href{https://doi.org/10.5281/zenodo.22803251}{10.5281/zenodo.22803251}. '
+                    'The frozen source and reproducibility package is archived separately as DOI '
+                    '\\href{https://doi.org/10.5281/zenodo.22803253}{10.5281/zenodo.22803253}. '
+                    'The public source repository is '
+                    '\\url{https://github.com/yonezaemon1-hub/local-rigidity-twelve-states-1-avoiding-threshold}.')
+          s = replace_once(s, anchor, addition, 'paper archival paragraph insertion')
+          p.write_text(s, encoding='utf-8', newline='\n')
+
+          # README.md
+          p = Path('README.md')
+          s = p.read_text(encoding='utf-8')
+          s = replace_once(
+              s,
+              'Status: pre-DOI preprint release candidate / not peer reviewed.',
+              'Status: DOI-bearing preprint release candidate / not peer reviewed.',
+              'README status'
+          )
+          marker = ('**Local Rigidity at Twelve States for the 2n-3 1-Avoiding Threshold with a '
+                    'Two-Fixed-Point Witness Family**.\n')
+          insert = marker + (f'\nArchival identifiers:\n\n- Paper DOI: `{PAPER_DOI}`\n'
+                             f'- Software DOI: `{SOFTWARE_DOI}`\n'
+                             f'- Repository: `{REPO_URL}`\n')
+          s = replace_once(s, marker, insert, 'README DOI block')
+          s = replace_once(
+              s,
+              '- Final preprint PDF — to be added only after Paper/Software DOI reservation, final rebuild, and SHA freeze',
+              f'- `{PDF_NAME}` — DOI-bearing final preprint PDF',
+              'README PDF filename'
+          )
+          p.write_text(s, encoding='utf-8', newline='\n')
+
+          # CITATION.cff
+          p = Path('CITATION.cff')
+          s = p.read_text(encoding='utf-8').rstrip() + '\n'
+          if 'doi:' in s:
+              raise SystemExit('CITATION.cff already contains a doi field; refusing ambiguous rewrite')
+          s += f'doi: "{PAPER_DOI}"\nurl: "{REPO_URL}"\n'
+          p.write_text(s, encoding='utf-8', newline='\n')
+
+          # paper.publish.json
+          p = Path('paper.publish.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          if data.get('paper_doi') not in (None, PAPER_DOI):
+              raise SystemExit(f"paper.publish.json unexpected paper_doi={data.get('paper_doi')!r}")
+          if data.get('software_doi') not in (None, SOFTWARE_DOI):
+              raise SystemExit(f"paper.publish.json unexpected software_doi={data.get('software_doi')!r}")
+          data['paper_doi'] = PAPER_DOI
+          data['software_doi'] = SOFTWARE_DOI
+          data['status'] = 'DOI-bearing preprint release candidate / not peer reviewed'
+          p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          # .zenodo.json (software record metadata)
+          p = Path('.zenodo.json')
+          data = json.loads(p.read_text(encoding='utf-8'))
+          related = data.get('related_identifiers', [])
+          target = {
+              'identifier': PAPER_DOI,
+              'relation': 'isSupplementTo',
+              'scheme': 'doi'
+          }
+          if target not in related:
+              related.append(target)
+          data['related_identifiers'] = related
+          p.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          # PREPUBLICATION_AUDIT.md
+          p = Path('PREPUBLICATION_AUDIT.md')
+          s = p.read_text(encoding='utf-8').rstrip() + '\n'
+          if '## DOI reservation and insertion — 17 September 2026' not in s:
+              s += f'''\n## DOI reservation and insertion — 17 September 2026\n\n- Paper DOI reserved: `{PAPER_DOI}`.\n- Software DOI reserved: `{SOFTWARE_DOI}`.\n- The two identifiers are distinct.\n- DOI values are inserted into the manuscript source and publication metadata by the guarded finalization workflow.\n- No Zenodo publication is claimed at this stage; public release remains blocked until the DOI-bearing PDF is rebuilt, hashed, uploaded to the corresponding drafts, and both records are explicitly published.\n'''
+          p.write_text(s, encoding='utf-8', newline='\n')
+
+          print(f'PAPER_DOI={PAPER_DOI}')
+          print(f'SOFTWARE_DOI={SOFTWARE_DOI}')
+          print('PASS_DOI_TEXT_INSERTION=true')
+          PY
+
+      - name: Install TeX and PDF inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended poppler-utils
+
+      - name: Build and inspect DOI-bearing PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          pdflatex -interaction=nonstopmode -halt-on-error paper.tex
+          pdflatex -interaction=nonstopmode -halt-on-error paper.tex
+          test -s paper.pdf
+          mv paper.pdf Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf
+          pdftotext Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf final_pdf.txt
+          grep -F '10.5281/zenodo.22803251' final_pdf.txt
+          grep -F '10.5281/zenodo.22803253' final_pdf.txt
+          if grep -F 'There were undefined references' paper.log; then
+            echo 'STOP_UNDEFINED_REFERENCES'
+            exit 1
+          fi
+          echo 'PASS_DOI_BEARING_PDF=true'
+
+      - name: Regenerate release integrity manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            ./.github/workflows/audit.yml
+            ./.github/workflows/finalize_no13.yml
+            ./.zenodo.json
+            ./CITATION.cff
+            ./FINAL_FACTCHECK.md
+            ./LICENSE
+            ./LICENSE_PAPER.txt
+            ./PREPUBLICATION_AUDIT.md
+            ./README.md
+            ./paper.publish.json
+            ./paper.tex
+            ./Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf
+            ./paper13_family_audit.py
+            ./paper13_family_audit_output.txt
+            ./paper13_isomorphism_check.py
+            ./paper13_isomorphism_check_output.txt
+            ./paper13_local_rigidity_a12.cpp
+            ./paper13_local_rigidity_a12_fast.cpp
+            ./paper13_local_rigidity_a12_fast_output.txt
+            ./paper13_local_rigidity_a12_fullref_output.txt
+            ./reproduce_all.ps1
+            ./reproduce_all.sh
+          )
+          for f in "${files[@]}"; do test -f "$f"; done
+          sha256sum "${files[@]}" > SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+          echo 'PASS_FINAL_SHA256_MANIFEST=true'
+
+      - name: Commit final DOI-bearing release candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            paper.tex \
+            README.md \
+            CITATION.cff \
+            paper.publish.json \
+            .zenodo.json \
+            PREPUBLICATION_AUDIT.md \
+            SHA256SUMS.txt \
+            Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf
+          git diff --cached --check
+          git diff --cached --quiet && { echo 'STOP_NO_FINALIZATION_DIFF'; exit 1; }
+          git commit -m 'Finalize No.13 DOI-bearing release candidate [skip ci]'
+          git push origin HEAD:main
+          echo "FINAL_COMMIT=$(git rev-parse HEAD)"
+          echo 'PASS_FINAL_GITHUB_COMMIT=true'
