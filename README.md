@@ -2,7 +2,7 @@
 
 Ryutaro Yonezu — Independent Researcher
 
-Status: DOI-bearing preprint release candidate / not peer reviewed.
+Status: DOI-bearing preprint / GitHub v1.0.0 public release / not peer reviewed.
 
 ## Main results
 
