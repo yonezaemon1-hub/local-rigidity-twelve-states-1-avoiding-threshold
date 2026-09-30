@@ -1,0 +1,69 @@
+name: Publish No.13 GitHub Release
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/publish_no13_release.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out frozen No.13 commit
+        uses: actions/checkout@v4
+        with:
+          ref: ca0b00865525eeec9c89b4a1d79a1e96ecd60ad3
+          fetch-depth: 1
+
+      - name: Verify frozen commit and assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "ca0b00865525eeec9c89b4a1d79a1e96ecd60ad3"
+          test -s Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf
+          test -s SHA256SUMS.txt
+          sha256sum -c SHA256SUMS.txt
+          grep -F '10.5281/zenodo.22803251' CITATION.cff
+          grep -F '10.5281/zenodo.22803253' paper.publish.json
+          echo PASS_RELEASE_PREFLIGHT=true
+
+      - name: Create immutable v1.0.0 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo RELEASE_ALREADY_EXISTS=true
+            exit 0
+          fi
+          cat > release_notes.md <<'EOF'
+          No.13 public release.
+
+          Paper:
+          Local Rigidity at Twelve States for the 2n-3 1-Avoiding Threshold with a Two-Fixed-Point Witness Family
+
+          Frozen source commit:
+          ca0b00865525eeec9c89b4a1d79a1e96ecd60ad3
+
+          Paper DOI:
+          10.5281/zenodo.22803251
+
+          Software DOI:
+          10.5281/zenodo.22803253
+
+          Scope:
+          This release freezes the DOI-bearing preprint and reproducibility artifacts. It is not peer reviewed.
+          EOF
+          gh release create v1.0.0 \
+            --target ca0b00865525eeec9c89b4a1d79a1e96ecd60ad3 \
+            --title 'v1.0.0 — Local Rigidity at Twelve States' \
+            --notes-file release_notes.md \
+            Yonezu_2026_Local_Rigidity_Twelve_States_1_Avoiding_Threshold.pdf \
+            SHA256SUMS.txt \
+            CITATION.cff
+          gh release view v1.0.0 --json tagName,url,publishedAt
